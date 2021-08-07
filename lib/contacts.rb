@@ -7,12 +7,12 @@ require "thor"
 module Contacts
   class Error < StandardError; end
   class CLI < Thor
-    desc "about", "description only"
+    desc "about", "Description only"
     def about
       puts "CLI contacts management tool"
     end
     
-    desc "add", "create a new person to your contact"
+    desc "add", "Create a new person to your contact"
     options :name => :required, :phone => :required 
     options :email => :default, :birthday => :default
     def add
@@ -24,6 +24,12 @@ module Contacts
       )
       
       person.save
+    end
+
+    desc "show", "Shows one specific or all contacts"
+    options :name => :default
+    def show
+      options[:name] ? Person.show(name: options[:name]) : Person.show
     end
   end
 end

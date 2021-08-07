@@ -12,8 +12,8 @@ class ContactsTest < Minitest::Test
     )
   end
 
-  def teardown
-    File.delete(Person::CSV_NAME)
+  def before_teardown
+    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
   end
 
   def test_create_person    
@@ -55,5 +55,30 @@ class ContactsTest < Minitest::Test
     _, csv_info = CSV.read(Person::CSV_NAME)
 
     assert_equal ['Lucas', "(99)99999-9999", nil, nil], csv_info
+  end
+  
+  def test_show_empty_file_data
+    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+
+    assert_nil Person.show
+  end
+
+  def test_show_empty_file_data_nonexistent_contact
+    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+
+    assert_nil Person.show(name: 'Lucas')
+  end
+
+  def test_show_first_contact
+    @person.save
+
+    assert_equal true, Person.show
+    assert_equal true, Person.show(name: 'Lucas')
+  end
+
+  def test_nonexistent_contact
+    @person.save
+
+    assert_nil Person.show(name: 'Carls')
   end
 end
