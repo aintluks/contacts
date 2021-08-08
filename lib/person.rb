@@ -10,7 +10,7 @@ class Person
     @name = name
     @phone = phone
     @email = email
-    birthday.nil? || birthday.empty? ? @birthday = nil : @birthday = Date.parse(birthday)
+    @birthday = Person.validate_date(birthday)
 
     File.open(CSV_NAME, "a") { |file| file.write(CSV_HEADER) } unless File.file?(CSV_NAME)
   end
@@ -26,19 +26,19 @@ class Person
   end
 
   def self.show(name: nil)
-    csv = self.csv_exists?
+    csv = csv_exists?
     return { message: "|No contacts to show..." } unless csv
 
-    contacts = name ? self.find_one(name: name) : csv[1..csv.length]
+    contacts = name ? find_one(name: name) : csv[1..csv.length]
     return { message: "|Contact not found..." } if contacts.empty?
 
-    self.display(contacts)
+    display(contacts)
 
     { message: "" }
   end
 
   def self.delete(name:)
-    csv = self.csv_exists?
+    csv = csv_exists?
     return { message: "|No contact to delete..." } unless csv
 
     to_remove = csv.map.with_index { |data, index| index if data.first.upcase == name.upcase }
@@ -54,7 +54,7 @@ class Person
   end
 
   def self.find_one(name:)
-    csv = self.csv_exists?
+    csv = csv_exists?
     return { message: "|No contact to find..." } unless csv
 
     res = csv.select { |data| data.first.upcase == name.upcase }
@@ -71,8 +71,9 @@ class Person
   end
 
   def self.edit(updated_data:)
-    updated_data[-1] = Date.parse(updated_data[-1])
-    csv = self.read_file.map { |arr| arr.first != updated_data.first ? arr : updated_data }
+    updated_data[-1] = validate_date(updated_data[-1])
+
+    csv = read_file.map { |arr| arr.first != updated_data.first ? arr : updated_data }
 
     File.open(CSV_NAME, "w") { |file| csv.map { |row| file.write(row.join(',') + "\n") } }
 
@@ -80,6 +81,10 @@ class Person
   end
 
   private
+    def self.validate_date(birthday)
+      birthday.nil? || birthday.empty? ? nil : Date.parse(birthday)
+    end
+  
     def self.read_file
       File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
     end
