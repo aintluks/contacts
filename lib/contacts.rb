@@ -22,26 +22,49 @@ module Contacts
         email: options[:email],
         birthday: options[:birthday]
       )
-      
-      person.save
+
+      puts person.save[:message]
     end
 
     desc "show", "Shows one specific or all contacts"
     options :name => :default
     def show
-      options[:name] ? Person.show(name: options[:name]) : Person.show
+      res = options[:name] ? Person.show(name: options[:name]) : Person.show
+      puts res[:message]
     end
 
     desc "del", "Delete a specific contact"
     options :name => :required
     def del
-      Person.delete(name: options[:name])
+      res = Person.delete(name: options[:name])
+      puts res[:message]
     end
 
     desc "edit", "Edit a specific contact"
     options :name => :required
     def edit
-      ask("", default => nil)
+      arr_person = Person.find_one(name: options[:name])
+      verify_edit = Person.verify_edit(arr_person)
+      return puts verify_edit[:message] if verify_edit
+
+      name, phone, email, birthday = arr_person.first
+      
+      puts "|Name: #{name}" # Can't change name (PK)
+      phone = ask("|Phone:", :default => phone)
+      email ? email = ask("|Email:", :default => email) : email = ask("|Email:", :default => nil)
+
+      birthday = 
+        if birthday
+          year, month, day = birthday.split('-')
+          ask("|Birthday:", :default => "#{day}/#{month}/#{year}")
+        else
+          ask("|Birthday:", :default => nil)
+        end
+      
+      res = 
+        Person.edit(updated_data: [name, phone, email, birthday])
+      
+      puts res[:message]
     end
   end
 end

@@ -10,61 +10,86 @@ class Person
     @name = name
     @phone = phone
     @email = email
-    @birthday = Date.parse(birthday) if birthday
+    birthday.nil? || birthday.empty? ? @birthday = nil : @birthday = Date.parse(birthday)
+
     File.open(CSV_NAME, "a") { |file| file.write(CSV_HEADER) } unless File.file?(CSV_NAME)
   end
 
   def save
     input_string = [@name, @phone, @email, @birthday]
     verify_exists = Person.find_one(name: @name)
-    return puts "User already saved!" unless verify_exists.empty?
+    return { message: "|Contact already saved!" } unless verify_exists.empty?
 
     File.open(CSV_NAME, "a") { |file| file.write(input_string.join(',') + "\n") }
 
-    puts "Saved successfully!!"
+    { message: "|Saved successfully!!" }
   end
 
   def self.show(name: nil)
-    csv = self.csv_exists?(message: "|No data to show...")
-    return unless csv
+    csv = self.csv_exists?
+    return { message: "|No contacts to show..." } unless csv
 
     contacts = name ? self.find_one(name: name) : csv[1..csv.length]
-    return puts "Contact not found!!" if contacts.empty?
+    return { message: "|Contact not found..." } if contacts.empty?
 
-    self.display(contacts) && true
+    self.display(contacts)
+
+    { message: "" }
   end
 
   def self.delete(name:)
-    csv = self.csv_exists?(message: "|No contact to delete...")
-    return unless csv
+    csv = self.csv_exists?
+    return { message: "|No contact to delete..." } unless csv
 
-    to_remove = csv.map.with_index { |data, index| index if data.first == name }.select { |index| index }
-    return puts "Contact not found!!" if to_remove.empty?
+    to_remove = csv.map.with_index { |data, index| index if data.first.upcase == name.upcase }
+      .select { |index| index }
+    
+    return { message: "|Contact not found..." } if to_remove.empty?
     
     res = csv.delete_at(to_remove.first)
-    
-    File.open(CSV_NAME, "w") { |file| file.write(csv.join(',') + "\n") }
 
-    puts "Deleted successfully!!"
-    res
+    File.open(CSV_NAME, "w") do |file|
+      csv.map { |row| file.write(row.join(',') + "\n") }
+    end
+
+    { message: "|Deleted successfully!!" }
   end
 
   def self.find_one(name:)
-    csv = self.csv_exists?(message: "No contact to find...")
-    return unless csv
+    csv = self.csv_exists?
+    return { message: "|No contact to find..." } unless csv
 
     res = csv.select { |data| data.first.upcase == name.upcase }
     res.empty? ? [] : res
   end
 
-  private
-    def self.csv_exists?(message:)
-      csv =
-      if File.file?(CSV_NAME)
-        File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
-      else
-        return puts message
+  def self.verify_edit(arr)
+    res =
+      if arr.class == Hash
+        { message: arr[:message] }
+      elsif arr.empty?
+        { message: "|Contact not found..." }
       end
+  end
+
+  def self.edit(updated_data:)
+    updated_data[-1] = Date.parse(updated_data[-1])
+    csv = self.read_file.map { |arr| arr.first != updated_data.first ? arr : updated_data }
+
+    File.open(CSV_NAME, "w") do |file|
+      csv.map { |row| file.write(row.join(',') + "\n") }
+    end
+
+    { message: "|Updated successfully!" }
+  end
+
+  private
+    def self.read_file
+      File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
+    end
+
+    def self.csv_exists?
+      File.file?(CSV_NAME) ? self.read_file : return
     end
 
     def self.display(contacts)

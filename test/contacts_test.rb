@@ -4,6 +4,8 @@ require "test_helper"
 
 class ContactsTest < Minitest::Test
   def setup
+    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+
     @person = Person.new(
       name: 'Lucas',
       phone: '(99)99999-9999',
@@ -67,51 +69,99 @@ class ContactsTest < Minitest::Test
   end
   
   def test_show_empty_file_data
-    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+    File.delete(Person::CSV_NAME)
 
-    assert_nil Person.show
+    res = Person.show
+
+    assert_equal "|No contacts to show...", res[:message]
   end
 
   def test_show_empty_file_data_nonexistent_contact
-    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+    File.delete(Person::CSV_NAME)
 
-    assert_nil Person.show(name: 'Lucas')
+    res = Person.show(name: 'Lucas')
+
+    assert_equal "|No contacts to show...", res[:message]
   end
 
   def test_show_first_contact
     @person.save
 
-    assert_equal true, Person.show
-    assert_equal true, Person.show(name: 'Lucas')
+    res_one = Person.show
+    res_two = Person.show(name: 'Lucas')
+
+    assert_equal "", res_one[:message]
+    assert_equal "", res_two[:message]
   end
 
   def test_nonexistent_contact
     @person.save
-
-    assert_nil Person.show(name: 'Carls')
+    
+    res = Person.show(name: 'Carls')
+    
+    assert_equal "|Contact not found...", res[:message]
   end
 
   def test_delete_person_empty_file
-    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+    File.delete(Person::CSV_NAME)
+    
+    res = Person.delete(name: 'Lucas')
 
-    assert_nil Person.delete(name: 'Lucas')
+    assert_equal "|No contact to delete...", res[:message]
   end
 
   def test_delete_nonexistent_person
     @person.save
 
-    assert_nil Person.delete(name: 'Carls')
+    res = Person.delete(name: 'Carls')
+
+    assert_equal "|Contact not found...", res[:message]
   end
 
   def test_delete_person
     @person.save
 
-    assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], Person.delete(name: 'Lucas')
+    res = Person.delete(name: 'Lucas')
+
+    assert_equal "|Deleted successfully!!", res[:message] 
   end
 
   def test_find_one
     @person.save
 
-    assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], Person.find_one(name: 'Lucas').first
+    res = Person.find_one(name: 'Lucas').first
+
+    assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], res
+  end
+
+  def test_find_one_nonexistent_file
+    File.delete(Person::CSV_NAME)
+
+    res = Person.find_one(name: 'Carls')
+
+    assert_equal "|No contact to find...", res[:message]
+  end
+
+  def test_find_one_nonexistent_person
+    @person.save
+
+    res = Person.find_one(name: 'Carls')
+
+    assert_equal [], res
+  end
+
+  def test_edit_one
+    @person.save
+
+    name = "Lucas"
+    email = "lucas@edit.com"
+    phone = "9999-9999"
+    birthday = "19/02/1992"
+    
+    edited_person = Person.edit(updated_data: [name, phone, email, birthday])
+    compare_person = Person.find_one(name: 'Lucas')
+
+    assert_equal "|Updated successfully!", edited_person[:message]
+    assert_equal ["Lucas", "9999-9999", "lucas@edit.com", "1992-02-19"], compare_person.first
   end
 end
