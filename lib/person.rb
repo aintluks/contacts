@@ -25,7 +25,7 @@ class Person
     { message: "|Saved successfully!!" }
   end
 
-  def self.show(name: nil)
+  def self.show(name:)
     csv = csv_exists?
     return { message: "|No contacts to show..." } unless csv
 
