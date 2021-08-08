@@ -23,12 +23,8 @@ class Person
   end
 
   def self.show(name: nil)
-    csv =
-    if File.file?(CSV_NAME)
-      File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
-    else
-      return puts "|No data to show..."
-    end
+    csv = self.csv_exists?(message: "|No data to show...")
+    return unless csv
 
     contacts = name ? csv.select { |data| data.first.upcase == name.upcase } : csv[1..csv.length]
     return puts "Contact not found!!" if contacts.empty?
@@ -36,21 +32,46 @@ class Person
     self.display(contacts) && true
   end
 
-  def self.display(contacts)
-    puts "-----------------------"
-    contacts.each do |contact|
-      name, phone, email, birthday = contact
-      display = "|Name: #{name}\n|Phone: #{phone}\n"
-      display += "|Email: #{email}\n" if email
-      display += 
-        if birthday
-          birthday = Date.parse(birthday)
-          "|Birthday: #{birthday.strftime("%d/%m/%Y")}\n"
-        else
-          ""
-        end
-      puts display
-      puts "-----------------------"
-    end
+  def self.delete(name:)
+    csv = self.csv_exists?(message: "|No contact to delete...")
+    return unless csv
+
+    to_remove = csv.map.with_index { |data, index| index if data.first == name }.select { |index| index }
+    return puts "Contact not found!!" if to_remove.empty?
+    
+    res = csv.delete_at(to_remove.first)
+    
+    File.open(CSV_NAME, "w") { |file| file.write(csv.join(',') + "\n") }
+
+    puts "Deleted successfully!!"
+    res
   end
+
+  private
+    def self.csv_exists?(message:)
+      csv =
+      if File.file?(CSV_NAME)
+        File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
+      else
+        return puts message
+      end
+    end
+
+    def self.display(contacts)
+      puts "-----------------------"
+      contacts.each do |contact|
+        name, phone, email, birthday = contact
+        display = "|Name: #{name}\n|Phone: #{phone}\n"
+        display += "|Email: #{email}\n" if email
+        display += 
+          if birthday
+            birthday = Date.parse(birthday)
+            "|Birthday: #{birthday.strftime("%d/%m/%Y")}\n"
+          else
+            ""
+          end
+        puts display
+        puts "-----------------------"
+      end
+    end
 end

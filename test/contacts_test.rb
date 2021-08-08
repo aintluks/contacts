@@ -81,4 +81,22 @@ class ContactsTest < Minitest::Test
 
     assert_nil Person.show(name: 'Carls')
   end
+
+  def test_delete_person_empty_file
+    File.delete(Person::CSV_NAME) if File.file?(Person::CSV_NAME)
+
+    assert_nil Person.delete(name: 'Lucas')
+  end
+
+  def test_delete_nonexistent_person
+    @person.save
+
+    assert_nil Person.delete(name: 'Carls')
+  end
+
+  def test_delete_person
+    @person.save
+
+    assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], Person.delete(name: 'Lucas')
+  end
 end

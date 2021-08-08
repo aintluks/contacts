@@ -31,5 +31,17 @@ module Contacts
     def show
       options[:name] ? Person.show(name: options[:name]) : Person.show
     end
+
+    desc "del", "Delete a specific contact"
+    options :name => :required
+    def del
+      Person.delete(name: options[:name])
+    end
+
+    desc "edit", "Edit a specific contact"
+    options :name => :required
+    def edit
+      ask("", default => nil)
+    end
   end
 end
