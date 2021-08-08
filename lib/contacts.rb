@@ -61,8 +61,7 @@ module Contacts
           ask("|Birthday:", :default => nil)
         end
       
-      res = 
-        Person.edit(updated_data: [name, phone, email, birthday])
+      res = Person.edit(updated_data: [name, phone, email, birthday])
       
       puts res[:message]
     end

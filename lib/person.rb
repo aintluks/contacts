@@ -48,9 +48,7 @@ class Person
     
     res = csv.delete_at(to_remove.first)
 
-    File.open(CSV_NAME, "w") do |file|
-      csv.map { |row| file.write(row.join(',') + "\n") }
-    end
+    File.open(CSV_NAME, "w") { |file| csv.map { |row| file.write(row.join(',') + "\n") } }
 
     { message: "|Deleted successfully!!" }
   end
@@ -76,9 +74,7 @@ class Person
     updated_data[-1] = Date.parse(updated_data[-1])
     csv = self.read_file.map { |arr| arr.first != updated_data.first ? arr : updated_data }
 
-    File.open(CSV_NAME, "w") do |file|
-      csv.map { |row| file.write(row.join(',') + "\n") }
-    end
+    File.open(CSV_NAME, "w") { |file| csv.map { |row| file.write(row.join(',') + "\n") } }
 
     { message: "|Updated successfully!" }
   end
@@ -100,8 +96,8 @@ class Person
         display += "|Email: #{email}\n" if email
         display += 
           if birthday
-            birthday = Date.parse(birthday)
-            "|Birthday: #{birthday.strftime("%d/%m/%Y")}\n"
+            year, month, day = birthday.split('-')
+            "|Birthday: #{day}/#{month}/#{year}\n"
           else
             ""
           end
