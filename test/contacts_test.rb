@@ -44,6 +44,15 @@ class ContactsTest < Minitest::Test
     assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], csv_info
   end
 
+  def test_create_save_person_to_csv
+    @person.save
+    @person.save
+    
+    csv_info = CSV.read(Person::CSV_NAME)
+
+    assert_equal 2, csv_info.length
+  end
+
   def test_create_save_default_nil_person_to_csv
     p = Person.new(
       name: 'Lucas',
@@ -98,5 +107,11 @@ class ContactsTest < Minitest::Test
     @person.save
 
     assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], Person.delete(name: 'Lucas')
+  end
+
+  def test_find_one
+    @person.save
+
+    assert_equal ['Lucas', "(99)99999-9999", "lucas@example.com", "2000-01-01"], Person.find_one(name: 'Lucas').first
   end
 end

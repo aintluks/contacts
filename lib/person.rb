@@ -16,7 +16,9 @@ class Person
 
   def save
     input_string = [@name, @phone, @email, @birthday]
-    
+    verify_exists = Person.find_one(name: @name)
+    return puts "User already saved!" unless verify_exists.empty?
+
     File.open(CSV_NAME, "a") { |file| file.write(input_string.join(',') + "\n") }
 
     puts "Saved successfully!!"
@@ -26,7 +28,7 @@ class Person
     csv = self.csv_exists?(message: "|No data to show...")
     return unless csv
 
-    contacts = name ? csv.select { |data| data.first.upcase == name.upcase } : csv[1..csv.length]
+    contacts = name ? self.find_one(name: name) : csv[1..csv.length]
     return puts "Contact not found!!" if contacts.empty?
 
     self.display(contacts) && true
@@ -45,6 +47,14 @@ class Person
 
     puts "Deleted successfully!!"
     res
+  end
+
+  def self.find_one(name:)
+    csv = self.csv_exists?(message: "No contact to find...")
+    return unless csv
+
+    res = csv.select { |data| data.first.upcase == name.upcase }
+    res.empty? ? [] : res
   end
 
   private
