@@ -29,7 +29,7 @@ module Contacts
     desc "show", "Shows one specific or all contacts"
     options :name => :default
     def show
-      res = options[:name] ? Person.show(name: options[:name]) : Person.show(name: nil)
+      res = options[:name] ? Person.show(name: options[:name]) : Person.show
       puts res[:message]
     end
 

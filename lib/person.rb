@@ -1,5 +1,6 @@
 require 'date'
 require 'csv'
+require 'person_validate'
 
 class Person
   attr_accessor :name, :phone, :email, :birthday
@@ -10,7 +11,7 @@ class Person
     @name = name
     @phone = phone
     @email = email
-    @birthday = Person.validate_date(birthday)
+    @birthday = PersonValidate.date_birthday(birthday)
 
     File.open(CSV_NAME, "a") { |file| file.write(CSV_HEADER) } unless File.file?(CSV_NAME)
   end
@@ -25,7 +26,7 @@ class Person
     { message: "|Saved successfully!!" }
   end
 
-  def self.show(name:)
+  def self.show(name: nil)
     csv = csv_exists?
     return { message: "|No contacts to show..." } unless csv
 
@@ -71,7 +72,7 @@ class Person
   end
 
   def self.edit(updated_data:)
-    updated_data[-1] = validate_date(updated_data[-1])
+    updated_data[-1] = PersonValidate.date_birthday(updated_data[-1])
 
     csv = read_file.map { |arr| arr.first != updated_data.first ? arr : updated_data }
 
@@ -81,10 +82,6 @@ class Person
   end
 
   private
-    def self.validate_date(birthday)
-      birthday.nil? || birthday.empty? ? nil : Date.parse(birthday)
-    end
-  
     def self.read_file
       File.read(CSV_NAME) { |file| CSV.read(file) }.split("\n").map { |str| str.split(',') }
     end
