@@ -1,5 +1,3 @@
-require 'person_validate'
-
 class Person
   attr_accessor :name, :phone, :email, :birthday
 
@@ -7,7 +5,7 @@ class Person
     @name = name
     @phone = phone
     @email = email
-    @birthday = PersonValidate.date_birthday(birthday)
+    @birthday = birthday
   end
 
   def to_array

@@ -14,7 +14,7 @@ class PersonTest < Minitest::Test
     assert_equal 'Example', person.name
     assert_equal '(99)99999-9999', person.phone
     assert_equal 'example@example.com', person.email
-    assert_equal '01/01/2000', person.birthday.strftime("%d/%m/%Y")
+    assert_equal '01/01/2000', person.birthday
   end
 
   def test_create_person_nil_values_email_birthday
