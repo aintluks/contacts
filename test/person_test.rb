@@ -3,6 +3,10 @@
 require "test_helper"
 
 class PersonTest < Minitest::Test
+  def before_teardown
+    File.delete(CsvHandler::CSV_NAME) if File.file?(CsvHandler::CSV_NAME)
+  end
+  
   def test_create_person
     person = Person.new(
       name: 'Example',
@@ -30,6 +34,4 @@ class PersonTest < Minitest::Test
     assert_nil person.email
     assert_nil person.birthday
   end
-
-  # test_validation_data
 end
