@@ -35,6 +35,6 @@ class CsvHandler
   end
 
   def find(name)
-    if find = read.select { |data| data.first.upcase == name.upcase }.first then find else [] end
+    read.select { |data| data.first.upcase == name.upcase }.first || []
   end
 end
