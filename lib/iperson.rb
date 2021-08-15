@@ -11,21 +11,22 @@ class IPerson
 
   def find(name)
     person = @db.find(name)
-    if person.empty? then nil else person end
+    person.empty? ? nil : person
   end
 
   def list_all
     contacts = @db.read[1..]
-    if contacts.empty? then "|No contacts to show..." else display(contacts) end
+    contacts.empty? ? "|No contacts to show..." : display(contacts)
   end
 
   def list_one(name)
     person = find(name) || []
-    if person.empty? then "|Contact not found..." else display([person]) end
+    person.empty? ? "|Contact not found..." : display([person])
   end
 
   def delete(name)
-    if @db.delete(name).empty? then "|Contact not found..." else "|Deleted successfully!!" end
+    person = @db.delete(name)
+    person.empty? ? "|Contact not found..." : "|Deleted successfully!!"
   end
 
   def update(new_data)
