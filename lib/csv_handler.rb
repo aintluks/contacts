@@ -30,10 +30,6 @@ class CsvHandler
     File.open(CSV_NAME, "w") { |file| csv.map { |row| file.write(row.join(',') + "\n") } }
   end
 
-  def empty?
-    File.file?(CSV_NAME) ? read : nil
-  end
-
   def append(input_string)
     File.open(CSV_NAME, "a") { |file| file.write(input_string.join(',') + "\n") }
   end
