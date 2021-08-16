@@ -6,8 +6,7 @@ class IPerson
     @messages = {
       :saved => "|Saved successfully!!",
       :already_saved => "|Contact already saved!",
-      :not_found => "|Contact not found...",
-      :no_contacts => "|No contacts to show...",
+      :not_found => "|Contact(s) not found...",
       :deleted => "|Deleted successfully!!",
       :updated => "|Updated successfully!"
     }
@@ -24,7 +23,7 @@ class IPerson
 
   def list_all
     contacts = @db.read[1..]
-    contacts.empty? ? @messages[:no_contacts] : display(contacts)
+    contacts.empty? ? @messages[:not_found] : display(contacts)
   end
 
   def list_one(name)
