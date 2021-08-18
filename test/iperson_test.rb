@@ -37,7 +37,7 @@ class IPersonTest < Minitest::Test
 
     list_nil = person_controller.list_all
 
-    assert_equal "|No contacts to show...", list_nil
+    assert_equal "|Contact(s) not found...", list_nil
   end
 
   def test_delete_person
