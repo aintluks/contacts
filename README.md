@@ -1,35 +1,131 @@
 # Contacts
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/contacts`. To experiment with that code, run `bin/console` for an interactive prompt.
+Este repositorio contem uma aplicacao interface de linha de comando (CLI) de contatos de pessoas feita no intuito de reforcar meus conhecimentos na linguagem Ruby.
 
-TODO: Delete this and the text above, and describe your gem
+A aplicacao e capaz de:
 
-## Installation
+- Adicionar pessoa
+- Deletar pessoa
+- Editar pessoa
+- Visualizar todas ou apenas uma pessoa dos contatos
+- Manipulacoes (CRUD) dos dados sao realizados atraves de um CSV
 
-Add this line to your application's Gemfile:
+## Como rodar
 
-```ruby
-gem 'contacts'
+Para rodar a aplicacao e bem simples, basta executar o seguinte comando que e responsavel pela instalacao das dependencias:
+
+```
+bundle install
 ```
 
-And then execute:
+depois disso a aplicacao ja esta pronta para ser usada
 
-    $ bundle install
+## Como utilizar
 
-Or install it yourself as:
+Esse projeto conta com alguns simples comandos, veja como usar:
 
-    $ gem install contacts
+### Listar todos os comandos
 
-## Usage
+Basta rodar o comando baixo que no terminal serao listados os comandos disponiveis da CLI
 
-TODO: Write usage instructions here
+```
+bundle exec exe/contacts
+```
 
-## Development
+### Descricao da CLI
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Uma breve descricao da aplicacao
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
+bundle exec exe/contacts about
+```
 
-## Contributing
+### Adicionar pessoa
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/contacts.
+Comando capaz de adicionar uma pessoa aos contatos
+
+- flags obrigatorias: --name, --phone
+- flags opcionais: --email, --bithday
+
+```
+bundle exec exe/contacts add --name=NAME --phone=PHONE
+```
+
+### Listando pessoa(s)
+
+Comando capaz de listar pessoa(s) cadastrada(s)
+
+- flag opcional: --name
+
+```
+bundle exec exe/contacts list
+```
+
+### Editando pessoa
+
+Comando capaz de editar pessoa cadastrada
+
+- flag obrigatoria: --name
+
+```
+bundle exec exe/contacts update --name=NAME
+```
+
+### Deletando pessoa
+
+Comando capaz de deletar pessoa cadastrada
+
+- flag obrigatoria: --name
+
+```
+bundle exec exe/contacts del --name=NAME
+```
+
+## Testes
+
+Este projeto conta com a realizacao de testes automatizandos criados com o Minitest
+
+#### Para rodar os testes
+
+```
+ruby -Ilib:test test/file_test.rb
+```
+
+### csv_handler_test.rb
+
+```
+Run options: --seed 45692
+
+# Running:
+
+..........
+
+Finished in 0.006987s, 1431.2499 runs/s, 1574.3749 assertions/s.
+10 runs, 11 assertions, 0 failures, 0 errors, 0 skips
+```
+
+### person_test.rb
+
+```
+Run options: --seed 59330
+
+# Running:
+
+..
+
+Finished in 0.001711s, 1169.2214 runs/s, 4676.8857 assertions/s.
+2 runs, 8 assertions, 0 failures, 0 errors, 0 skips
+```
+
+### iperson_test.rb
+
+```
+Run options: --seed 57985
+
+# Running:
+
+.....
+
+Finished in 0.004027s, 1241.5038 runs/s, 1241.5038 assertions/s.
+5 runs, 5 assertions, 0 failures, 0 errors, 0 skips
+```
